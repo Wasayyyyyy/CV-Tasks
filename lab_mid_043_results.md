@@ -1,143 +1,92 @@
-# Lab Mid Exam: HOG vs SIFT on Blood-Cell Images
+# Lab Mid: HOG vs SIFT on Blood-Cell Images
 
-**Name:** Abdul Wasay | **Reg. No:** XXX-043 | **Course:** Computer Vision Lab
-
-Executed notebook: `043_AbdulWasay_LabMid.ipynb` (all outputs below are copied from it).
-
-## My personal settings (reg. no. 043, last digit 3)
-
-| Setting | Rule | My value |
-|---|---|---|
-| Random seed | last two digits | **43** |
-| HOG cell size | last digit odd | **16 x 16** |
-| SIFT grid | last digit 0-4 | **4 x 4 (16 keypoints)** |
+**Abdul Wasay** | Reg. No: FA23-BAI-043 | Seed **43** | HOG cell **16x16** | SIFT grid **4x4**
 
 ---
 
-## Q1. Data Setup
+## Headline Results
 
-Load BloodMNIST (size 64), keep classes eosinophil (1), monocyte (5), neutrophil (6), platelet (7), pick 100/30/30 images per class with seed 43, convert to grayscale, resize to 128 x 128.
+| Model | Validation Acc | Macro-F1 | Test: Clean | Test: Rotated 20 deg | Test: Noisy (sigma 0.05) |
+|---|---|---|---|---|---|
+| HOG + SVM | **72.5%** | **0.7175** | **70.0%** | **65.8%** | **26.7%** |
+| SIFT + SVM | **74.2%** | **0.7404** | **75.8%** | **72.5%** | **74.2%** |
 
-```
-Train shape: (400, 128, 128)  counts: {'eosinophil': 100, 'monocyte': 100, 'neutrophil': 100, 'platelet': 100}
-Val   shape: (120, 128, 128)  counts: {'eosinophil': 30, 'monocyte': 30, 'neutrophil': 30, 'platelet': 30}
-Test  shape: (120, 128, 128)  counts: {'eosinophil': 30, 'monocyte': 30, 'neutrophil': 30, 'platelet': 30}
-```
+## Winner: SIFT + SVM is more reliable
+
+- **Rotation:** both models lose little. HOG drops 4.2 points, SIFT drops 3.3 points (a one-image difference).
+- **Noise:** HOG collapses from 70.0% to 26.7% (a drop of 43.3 points, near chance for 4 classes). SIFT only drops 1.7 points.
+
+---
+
+## Q1. Data
+
+| Split | Shape | Per class |
+|---|---|---|
+| Train | (400, 128, 128) | 100 each |
+| Val | (120, 128, 128) | 30 each |
+| Test | (120, 128, 128) | 30 each |
+
+Classes: eosinophil, monocyte, neutrophil, platelet.
 
 ---
 
 ## Q2. HOG + SVM
 
-### Q2(a) HOG features
+### Feature length: **1764**
 
-```
-HOG feature length: 1764
-HOG train matrix: (400, 1764)  val matrix: (120, 1764)
-```
+- Cells per side = 128 / 16 = 8
+- Blocks per side = 8 - 2 + 1 = 7, so 7 x 7 = 49 blocks
+- Values per block = 2 x 2 x 9 = 36
+- Total = 49 x 36 = **1764**
 
-**Feature length by hand (cell 16 x 16):**
-- Cells per side = 128 / 16 = **8**, so 8 x 8 cells
-- A block is 2 x 2 cells and slides one cell at a time, so blocks per side = 8 - 2 + 1 = **7**, giving 7 x 7 = **49 blocks**
-- Values per block = 2 x 2 cells x 9 orientations = **36**
-- Total = 49 x 36 = **1764** (matches the printed length)
+### Validation: Accuracy **0.7250** | Macro-F1 **0.7175** | Best C = 0.1
 
-### Q2(b) HOG pictures (one image per class)
-
-### Q2(c) SVM, C chosen on validation
-
-```
-HOG + SVM:
-  C = 0.1  -> validation accuracy = 0.7250
-  C = 1    -> validation accuracy = 0.7250
-  C = 10   -> validation accuracy = 0.7250
-Best C: 0.1
-HOG + SVM | Validation accuracy: 0.7250 | Macro-F1: 0.7175
-```
-
-All three C values give the same accuracy because the standardised training data is linearly separable, so C has no effect. Ties keep the smallest C (0.1).
+All C in {0.1, 1, 10} gave 0.7250 (training data is linearly separable, so C has no effect; ties keep the smallest C).
 
 ---
 
 ## Q3. SIFT + SVM
 
-### Q3(a) Normal SIFT detection (training images)
+### Normal SIFT keypoints (train)
 
-```
-Average keypoints per image: 72.97
-Minimum keypoints: 8
-Maximum keypoints: 178
-Images with zero keypoints: 0
-```
+| Average | Min | Max | Images with 0 keypoints |
+|---|---|---|---|
+| 72.97 | 8 | 178 | 0 |
 
-**Why is a different number of keypoints a problem?** An SVM needs every image to be a feature vector of the same length, but each keypoint adds 128 values, so my image with 8 keypoints gives 1024 values while the one with 178 gives 22,784.
+A different number of keypoints is a problem because an SVM needs same-length vectors: my 8-keypoint image gives 1024 values while the 178-keypoint one gives 22,784.
 
-### Q3(b) Fixed grid of keypoints
+### Grid SIFT feature length: **2048**
 
-```
-Grid centres: [16.0, 48.0, 80.0, 112.0] -> number of keypoints: 16
-SIFT feature length: 2048
-SIFT train matrix: (400, 2048)  val matrix: (120, 2048)
-```
+Grid points x 128 = (4 x 4) x 128 = 16 x 128 = **2048**
 
-**Feature length by hand:** grid points x 128 = (4 x 4) x 128 = 16 x 128 = **2048** (matches the printed length). Every image now has exactly 16 keypoints, so every image gives a 2048-long vector.
+### Validation: Accuracy **0.7417** | Macro-F1 **0.7404** | Best C = 0.1
 
-### Q3(c) SVM, C chosen on validation
-
-```
-SIFT + SVM:
-  C = 0.1  -> validation accuracy = 0.7417
-  C = 1    -> validation accuracy = 0.7417
-  C = 10   -> validation accuracy = 0.7417
-Best C: 0.1
-SIFT + SVM | Validation accuracy: 0.7417 | Macro-F1: 0.7404
-```
+All C in {0.1, 1, 10} gave 0.7417.
 
 ---
 
 ## Q4. Robustness
 
-### Q4(a) Prediction (written before testing)
+**Prediction (before testing):** HOG loses more under rotation (rotation shifts edges across its fixed cells and bins). SIFT loses more under noise (its fine descriptors are more sensitive to noise).
 
-- **Rotation:** HOG will lose more accuracy because rotation shifts edges across its fixed cells and orientation bins.
-- **Noise:** SIFT will lose more accuracy because its finer descriptors are more sensitive to random noise, while HOG's block normalisation helps reduce its effects.
+| Model | Clean | Rotated | Noisy | Drop (rotation) | Drop (noise) |
+|---|---|---|---|---|---|
+| HOG + SVM | 0.7000 | 0.6583 | 0.2667 | 0.0417 | 0.4333 |
+| SIFT + SVM | 0.7583 | 0.7250 | 0.7417 | 0.0333 | 0.0167 |
 
-### Q4(b) Test results
-
-Both models are frozen (no retraining). The change is applied to the image first, then features are extracted.
-
-| Model | Clean accuracy | Rotated accuracy | Noisy accuracy |
-|---|---|---|---|
-| HOG + SVM | 0.7000 | 0.6583 | 0.2667 |
-| SIFT + SVM | 0.7583 | 0.7250 | 0.7417 |
-
-```
-HOG + SVM: drop under rotation = 0.0417, drop under noise = 0.4333
-SIFT + SVM: drop under rotation = 0.0333, drop under noise = 0.0167
-```
-
-### Q4(c) Was my prediction correct?
-
-My rotation prediction was correct, but only by one test image (HOG dropped 0.0417, SIFT 0.0333), so the gap is too small to be conclusive. My noise prediction was wrong: HOG fell from 0.7000 to 0.2667 (near chance for 4 classes), while SIFT only fell from 0.7583 to 0.7417. So SIFT was more reliable under noise, and neither model lost much under rotation.
+**Was I right?** My rotation prediction was correct, but only by one test image (HOG dropped 0.0417, SIFT 0.0333), so the gap is too small to be conclusive. My noise prediction was wrong: HOG fell from 0.7000 to 0.2667 (near chance), while SIFT only fell from 0.7583 to 0.7417. So SIFT was more reliable under noise, and neither model lost much under rotation.
 
 ---
 
-## Q5. Short Answers and AI Log
+## Q5. Short Answers
 
-### Q5(a) Theory
+**Why block normalisation?** Lighting and contrast change gradient sizes, so the same cell can look very different in a bright or dark photo. Normalising each 2x2 block makes the histograms depend on edge shape rather than brightness.
 
-**(a) Why does HOG use block normalisation?** Lighting and contrast change the size of gradients across an image, so the same cell can look very different in a bright or dark photo. Normalising each 2 x 2 block makes the histograms depend on the *shape* of the edges rather than how bright they are.
+**Why not choose C on the test set?** Choosing C by test score lets the test set influence the model, so its accuracy is no longer an honest estimate on unseen data. Validation is for tuning; test is touched only once, at the end.
 
-**(b) Why is it wrong to choose C using the test set?** If C is picked because it scores best on the test set, the test set has helped train the model, so its accuracy is no longer an honest estimate on unseen data. The validation set is for tuning; the test set must be touched only once, at the end.
+**Most confused classes:** eosinophil and monocyte (27 mistakes over both models' validation matrices). Their main difference is colour, and grayscale turns both into similar grey, so they look alike.
 
-### Q5(b) Most confused classes
-
-```
-Most confused pair: eosinophil <-> monocyte  (27 mistakes in total)
-```
-
-The models confused *eosinophil and monocyte* the most (27 mistakes, summed over both models' validation confusion matrices). Their main difference is colour (orange-red granules vs blue-grey cytoplasm), and grayscale turns both into similar grey, so they look alike. (The colour explanation is from domain knowledge, not from a notebook output.)
-
-### Q5(c) AI log
+### AI log
 
 | Prompt | What I changed | How I checked |
 |---|---|---|
