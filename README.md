@@ -12,6 +12,7 @@ Each folder holds one lab: its notebook(s) and, where available, a `README.md` w
 | [Lab 05](Lab-05_HOG-Detection) | HOG-based detection: steel defects and skin lesions | `LAB_05_HOG_Defect_Detection_Steel_043.ipynb`, `LAB_05_HOG_Skin_Lesion_043.ipynb` |
 | [Lab 06](Lab-06_SIFT-Landmark-Recognition) | Landmark recognition with SIFT, ratio test and RANSAC | `landmark_recognition_lab6.ipynb` |
 | [Lab 7 - Inkspection Semester Project](Lab%207%20-%20Inkspection%20Semester%20Project) | Inkspection: agent-based document fraud detection (paper draft) | `Inkspection_Paper_Draft.pdf` |
+| [Lab 8 - Assignment 3](LAB%208%20-%20Assignment%203) | Comparing six regression algorithms (Linear, Decision Tree, Random Forest, Neural Network, XGBoost, KNN) on the Diabetes dataset | `A3_Regression_Comparison_FA23_BAI_043.ipynb` |
 | [Lab Mid](Lab-Mid_HOG-vs-SIFT) | HOG + SVM vs SIFT + SVM on blood-cell images | `43_AbdulWasay_LabMid.ipynb` |
 
 Every notebook has an "Open in Colab" badge at the top that points to its location in this repo.
