@@ -6,11 +6,6 @@
 
 Six regression algorithms are compared on the **Diabetes dataset** (442 patients, 10 features), using the same features, target and 80:20 split (353 train / 89 test) for every model.
 
-## How to run
-
-1. Run the first cell to install the libraries (`scikit-learn`, `xgboost`, `pandas`, `matplotlib`).
-2. Click **Run All**. It takes about 1–3 minutes.
-
 ## Results (test set)
 
 | Rank | Model | MAE | MSE | RMSE | R² |
