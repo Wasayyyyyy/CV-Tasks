@@ -28,9 +28,3 @@ Six regression algorithms are compared on the **Diabetes dataset** (442 patients
 - **The top 5 are very close.** They are within 1.9 RMSE points of each other, and only the Decision Tree is significantly worse.
 - **The Neural Network has the lowest MAE**, but it makes a few larger errors, which raises its RMSE.
 - **The Decision Tree is weakest.** Its depth-2 tree can output only 4 different values.
-
-## Output files
-
-- `results_table.csv`: all metrics for the six models
-- `fig_actual_vs_predicted.png`: actual vs predicted plot for each model
-- `fig_metric_comparison.png`: R² and RMSE bar charts
