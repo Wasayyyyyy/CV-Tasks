@@ -13,6 +13,7 @@ Each folder holds one lab: its notebook(s) and, where available, a `README.md` w
 | [Lab 06](Lab-06_SIFT-Landmark-Recognition) | Landmark recognition with SIFT, ratio test and RANSAC | `landmark_recognition_lab6.ipynb` |
 | [Lab 7 - Inkspection Semester Project](Lab%207%20-%20Inkspection%20Semester%20Project) | Inkspection: agent-based document fraud detection (paper draft) | `Inkspection_Paper_Draft.pdf` |
 | [Lab 10 - Assignment 3](LAB%2010%20-%20Assignment%203) | Comparing six regression algorithms (Linear, Decision Tree, Random Forest, Neural Network, XGBoost, KNN) on the Diabetes dataset | `A3_Regression_Comparison_FA23_BAI_043.ipynb` |
+| [Lab 12](Lab%2012) | Computer Vision Lab 12 | — |
 | [Lab Mid](Lab-Mid_HOG-vs-SIFT) | HOG + SVM vs SIFT + SVM on blood-cell images | `43_AbdulWasay_LabMid.ipynb` |
 
 Every notebook has an "Open in Colab" badge at the top that points to its location in this repo.
